@@ -29,17 +29,26 @@ localforage.getItem(song).then(function(result){
 if(result !== null){console.log('Playing '+song+' from Cache');return false;}else{
 console.log('Downloading and Caching '+song);
 var xhr = new XMLHttpRequest();
+var pbar = document.getElementById('prog')
 xhr.responseType = 'blob';
+xhr.onprogress = function (event){
+pbar.max = event.total;
+pbar.value = event.loaded;
+}
 xhr.onload = function() {
+pbar.style = "display:none;";
+console.log("Cloudflare Cache Status for "+song+" : " + xhr.getResponseHeader("cf-cache-status"));
 var reader  = new FileReader();
 reader.onloadend = function () {
 result = reader.result;
-localforage.setItem(song,result).then(function(){play(id)});
+if(result.includes('audio') == true){
+localforage.setItem(song,result).then(function(){play(id);})};
 }
 reader.readAsDataURL(xhr.response);};
 xhr.open('GET', url);
 xhr.send();
-}})}//}
+pbar.style = "";
+}})}
 
 // searching
 function contains(text_one, text_two){return text_one.toLowerCase().indexOf(text_two.toLowerCase()) != -1;}
