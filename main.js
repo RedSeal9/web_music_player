@@ -39,10 +39,12 @@ xhr.onprogress = function (event){
 pbar.max = event.total;
 pbar.value = event.loaded;
 }
+xhr.loadstart = function() {
+console.log("Cloudflare Cache Status for "+song+": " + xhr.getResponseHeader("cf-cache-status"));
+}
 xhr.onload = function() {
 pbar.remove();
 ptxt.remove();
-console.log("Cloudflare Cache Status for "+song+": " + xhr.getResponseHeader("cf-cache-status"));
 var reader  = new FileReader();
 reader.onloadend = function () {
 result = reader.result;
